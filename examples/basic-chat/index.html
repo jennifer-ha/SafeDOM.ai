@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SafeDOM.ai Example</title>
+  </head>
+  <body>
+    <main id="ticket-root">
+      <h2 data-ai="include" data-ai-label="subject">Example ticket</h2>
+      <p data-ai="include" data-ai-label="summary">
+        User reports login prompts are failing intermittently.
+      </p>
+      <p data-ai="redact:email phone" data-ai-label="customer">
+        Contact: jane.doe@example.com, phone +1 415-555-9000
+      </p>
+      <p data-ai="exclude">Internal only: tracing IDs go here.</p>
+    </main>
+
+    <section>
+      <button id="collect">Build AI context</button>
+      <pre id="output"></pre>
+    </section>
+
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SafeDOM.ai Demo</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="notice">
+        <strong>⚠️ Demo only.</strong>
+        Do not paste real personal data here. This demo is for showcasing SafeDOM.ai behaviour, not for processing real customer data.
+      </section>
+
+      <section class="layout">
+        <div class="card">
+          <header>
+            <p class="eyebrow">Ticket input</p>
+            <h1>Customer issue</h1>
+            <p class="muted">Annotate fields with data-ai attributes to control inclusion and redaction.</p>
+          </header>
+
+          <div id="ticket" class="ticket">
+            <h2 data-ai="include" data-ai-label="subject">Delayed delivery for order 1234</h2>
+
+            <p data-ai="redact:email phone">
+              Customer: john.doe@example.com, +31 6 12345678
+            </p>
+
+            <label class="field">
+              <span>Customer message (included)</span>
+              <textarea
+                data-ai="redact:email phone"
+                data-ai-label="message"
+                placeholder="Type the customer message here..."
+              >Package still not delivered. Please help ASAP.</textarea>
+            </label>
+
+            <p data-ai="exclude" class="muted">
+              Internal admin note: should never be sent to AI.
+            </p>
+          </div>
+
+          <button id="analyze" type="button">Build AI context</button>
+        </div>
+
+        <div class="card">
+          <header>
+            <p class="eyebrow">Output</p>
+            <h2>SafeDOM.ai result</h2>
+            <p class="muted">Includes fields, rawText, and redactions with placeholders.</p>
+          </header>
+          <pre id="output" class="output">// Click “Build AI context” to see results</pre>
+          <div id="placeholder-warning" class="warning muted" style="display:none;"></div>
+        </div>
+
+        <div class="card">
+          <header>
+            <p class="eyebrow">Mock AI reply</p>
+            <h2>Reinject placeholders</h2>
+            <p class="muted">Simulate a model response using placeholders, then reinject originals.</p>
+          </header>
+          <label class="field">
+            <span>AI response (with placeholders)</span>
+            <textarea id="ai-reply" placeholder="e.g. We'll contact you at __EMAIL_1__ once shipped."></textarea>
+          </label>
+          <button id="reinject" type="button">Reinject placeholders</button>
+          <pre id="reinjected" class="output muted">// Reinjected response will appear here</pre>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

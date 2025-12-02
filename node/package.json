@@ -1,0 +1,13 @@
+{
+  "name": "@safedom/ai-node",
+  "version": "1.0.0",
+  "description": "SafeDOM.ai backend helpers for reinjecting placeholders.",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false
+}

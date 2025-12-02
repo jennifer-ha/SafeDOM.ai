@@ -1,0 +1,51 @@
+{
+  "name": "safedom-ai",
+  "version": "1.0.0",
+  "description": "SafeDOM.ai – Privacy-first DOM-to-AI context builder with automatic PII redaction.",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./node": {
+      "import": "./node/dist/index.js",
+      "types": "./node/dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "node/dist"
+  ],
+  "scripts": {
+    "build": "tsc -b . node/tsconfig.json",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" \"node/src/**/*.ts\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rimraf dist node/dist"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "privacy",
+    "redaction",
+    "dom",
+    "ai",
+    "typescript"
+  ],
+  "devDependencies": {
+    "@types/jsdom": "^21.1.7",
+    "@typescript-eslint/eslint-plugin": "^7.17.0",
+    "@typescript-eslint/parser": "^7.17.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "jsdom": "^24.1.0",
+    "rimraf": "^5.0.9",
+    "typescript": "^5.5.4",
+    "vitest": "^1.6.0"
+  }
+}

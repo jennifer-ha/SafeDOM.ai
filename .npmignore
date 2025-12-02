@@ -1,0 +1,8 @@
+node_modules
+coverage
+examples
+test
+*.log
+*.tmp
+.DS_Store
+.vite
