@@ -189,8 +189,8 @@ MIT. See `LICENSE`.
 
 ## Demo
 
-A live demo shows SafeDOM.ai annotations and redaction flow on GitHub Pages (set the URL in repo settings after enabling Pages):  
-`https://<your-username>.github.io/safedom-ai/`
+A live demo shows SafeDOM.ai annotations and redaction flow on GitHub Pages:  
+`https://jennifer-ha.github.io/SafeDOM.ai/`
 
 Run the demo locally:
 
