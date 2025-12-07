@@ -2,6 +2,11 @@
 
 Build prompt context from real UI state while minimizing the risk of leaking sensitive data. Annotate the DOM with `data-ai` attributes, automatically redact common PII, and reinject values safely on the backend when needed.
 
+## Demo
+
+- Live (GitHub Pages): [https://jennifer-ha.github.io/SafeDOM.ai/](https://jennifer-ha.github.io/SafeDOM.ai/)
+- Local: `cd examples/demo-site && npm install && npm run dev`
+
 ## What it does
 
 - `data-ai` annotations decide what to include, exclude, or redact.
@@ -17,13 +22,13 @@ Build prompt context from real UI state while minimizing the risk of leaking sen
 
 ## Quickstart
 
-Install (workspace root):
+1) Install (workspace root):
 
 ```bash
 npm install
 ```
 
-Annotate DOM:
+2) Annotate the DOM:
 
 ```html
 <div id="ticket-root">
@@ -35,7 +40,7 @@ Annotate DOM:
 </div>
 ```
 
-Build context in the browser:
+3) Build context in the browser:
 
 ```ts
 import { buildAiContext } from "safedom-ai";
@@ -47,7 +52,7 @@ const ctx = buildAiContext("#ticket-root", { labeledOnly: true, region: "eu" });
 // ctx.redactions -> [{ placeholder: "__EMAIL_1__", original: "alice@example.com", type: "email" }, ...]
 ```
 
-Send to a provider (example with OpenAI; ensure you comply with their data handling terms):
+4) Send to a provider (example with OpenAI; ensure you comply with their data handling terms):
 
 ```ts
 const response = await openai.chat.completions.create({
@@ -56,7 +61,7 @@ const response = await openai.chat.completions.create({
 });
 ```
 
-Reinject placeholders on the backend (Node):
+5) Reinject placeholders on the backend (Node):
 
 ```ts
 import { reinjectPlaceholders } from "@safedom/ai-node";
@@ -97,12 +102,31 @@ Returns:
 
 Heuristic regexes for:
 - Email: `__EMAIL_n__`
-- Phone (generic): `__PHONE_n__`
-- IBAN: `__IBAN_n__`
-- Credit card (simplified): `__CARD_n__`
-- US SSN (simplified): `__SSN_n__`
+- Phone (generic E.164-ish): `__PHONE_n__`
+- IBAN (generic ISO 13616 shape): `__IBAN_n__`
+- Credit card (13-19 digits, Luhn-validated): `__CARD_n__`
+- US SSN: `__SSN_n__`
 
 Rules run in deterministic order. Placeholder numbering increments across all rules within a call.
+
+### `createRedactionRules(options)`
+
+Build a ruleset with optional country-specific patterns. Country-specific rules come first, then core rules:
+
+```ts
+import { createRedactionRules, buildAiContext } from "safedom-ai";
+
+const rules = createRedactionRules({
+  countries: ["nl", "de", "gb", "fr", "us"], // ISO-like country codes
+  includeGenericPhone: true, // keep fallback E.164-ish phone matching
+  includeGenericIban: true, // keep generic IBAN shape matcher
+  extraRules: [] // add your own RedactionRule objects
+});
+
+const ctx = buildAiContext("#ticket-root", { redactionRules: rules });
+```
+
+Included country profiles (IBAN + phone where relevant): `nl`, `de`, `gb`, `fr`, `us`. Extend by adding entries to `countryRedactionRules` or by passing `extraRules`.
 
 ### `applyRedactions(input, rules, startIndex?)`
 
@@ -186,38 +210,3 @@ Contributions welcome! See `CONTRIBUTING.md` for guidelines. When proposing new 
 ## License
 
 MIT. See `LICENSE`.
-
-## Demo
-
-A live demo shows SafeDOM.ai annotations and redaction flow on GitHub Pages:  
-[https://jennifer-ha.github.io/SafeDOM.ai/](https://jennifer-ha.github.io/SafeDOM.ai/)
-
-Run the demo locally:
-
-```bash
-cd examples/demo-site
-npm install
-npm run dev
-```
-
-Core snippet from the demo:
-
-```html
-<div id="ticket">
-  <h2 data-ai="include" data-ai-label="subject">Delayed delivery for order 1234</h2>
-  <p data-ai="redact:email phone">Customer: john.doe@example.com, +31 6 12345678</p>
-  <textarea data-ai="redact:email phone" data-ai-label="message"></textarea>
-  <p data-ai="exclude">Internal admin note</p>
-</div>
-```
-
-```ts
-import { buildAiContext } from "safedom-ai";
-
-const ctx = buildAiContext("#ticket", { labeledOnly: true, region: "eu" });
-console.log(ctx);
-
-// (Demo) mock AI response that includes placeholders:
-// "We will reach you at __EMAIL_1__ or call __PHONE_2__."
-// Use reinjectPlaceholders on the backend to restore originals.
-```

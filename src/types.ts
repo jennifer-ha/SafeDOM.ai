@@ -25,6 +25,12 @@ export interface RedactionRule {
    * For example: "__EMAIL_1__".
    */
   placeholderPrefix: string;
+
+  /**
+   * Optional post-match validation hook to reduce false positives (e.g. Luhn for credit cards).
+   * If provided and returns false, the match is skipped.
+   */
+  validate?: (match: string) => boolean;
 }
 
 export interface Redaction {

@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { applyRedactions, defaultRedactionRules, validateRedactionRules } from "../src/redaction.js";
+import {
+  applyRedactions,
+  createRedactionRules,
+  defaultRedactionRules,
+  validateRedactionRules
+} from "../src/redaction.js";
 
 describe("applyRedactions", () => {
   it("redacts multiple emails with stable placeholders", () => {
@@ -41,6 +46,15 @@ describe("applyRedactions", () => {
     expect(redactions[0].original).toBe("4111 1111 1111 1111");
   });
 
+  it("skips credit card numbers that fail Luhn", () => {
+    const input = "Card 4111 1111 1111 1112 exp 12/30.";
+    // Remove generic phone so only the credit card rule is tested.
+    const rules = createRedactionRules({ includeGenericPhone: false });
+    const { text, redactions } = applyRedactions(input, rules);
+    expect(text).toBe(input);
+    expect(redactions.every((r) => r.type !== "creditcard")).toBe(true);
+  });
+
   it("redacts US SSNs", () => {
     const input = "SSN 123-45-6789 required.";
     const { text, redactions } = applyRedactions(input, defaultRedactionRules);
@@ -55,5 +69,22 @@ describe("applyRedactions", () => {
     expect(() =>
       validateRedactionRules([{ type: "ok", pattern: /(a+)+b/g, placeholderPrefix: "__OK_" }])
     ).not.toThrow();
+  });
+
+  it("applies country-specific rules when requested", () => {
+    const rules = createRedactionRules({ countries: ["nl", "de"] });
+    const input = "NL91ABNA0417164300 and DE89370400440532013000";
+    const { text, redactions } = applyRedactions(input, rules);
+
+    expect(text).toBe("__IBAN_NL_1__ and __IBAN_DE_2__");
+    expect(redactions.map((r) => r.type)).toEqual(["iban-nl", "iban-de"]);
+  });
+
+  it("keeps generic rules by default", () => {
+    const rules = createRedactionRules();
+    const input = "Reach me at +1 212-555-7890";
+    const { text, redactions } = applyRedactions(input, rules);
+    expect(text).toContain("__PHONE_1__");
+    expect(redactions[0].type).toBe("phone");
   });
 });
