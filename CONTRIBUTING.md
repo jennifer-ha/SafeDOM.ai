@@ -53,7 +53,7 @@ npm install
 npm run dev
 ```
 
-The demo shows SafeDOM.ai annotations and redactions; keep sample data fictional and avoid real PII.*** End Patch
+The demo shows SafeDOM.ai annotations and redactions; keep sample data fictional and avoid real PII.
 
 ## Licensing
 
